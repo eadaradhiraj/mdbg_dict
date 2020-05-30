@@ -1,4 +1,5 @@
 import requests
+import unicodedata
 from bs4 import BeautifulSoup as soup
 
 words = []
@@ -22,12 +23,6 @@ for tr in trs:
     # print(cols)
     if(len(tds) > 1):
         words.append(
-            {"hanzi": tds[1], "pinyin": tds[0].encode('ascii', 'ignore').decode("utf-8", "ignore"), "definition": tds[2]})
+            {"hanzi": tds[1], "pinyin": tds[0].replace(u'\u200b', ''), "definition": tds[2]})
 
-# print(words)
-
-import pandas
-
-df = pandas.DataFrame(data=words)
-df.to_csv("words.csv", sep=',', index=False)
-# print(len(all_titles))
+print(words[0]['pinyin'].split())
