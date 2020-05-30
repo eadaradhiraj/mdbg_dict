@@ -1,37 +1,33 @@
+import requests
 from bs4 import BeautifulSoup as soup
-from urllib.request import urlopen as ureq
-import csv
-all_titles = []
 
-# filename = "titles.csv"
-# f = open(filename, 'w')
-# headers = "titles"
-# f.write(headers)
-for i in range(1,161):
-    # my_url = ''
-    my_url = "https://www.newegg.com/global/in-en/p/pl?d=graphics&page="+str(i)
+words = []
+result = requests.get(
+    "https://www.mdbg.net/chinese/dictionary?page=worddict&wdrst=0&wdqb=super")
 
-    client = ureq(my_url)
+# print(result.status_code)
 
-    raw_html = client.read()
+res = result.content
 
-    page_soup = soup(raw_html, 'html.parser')
+page_soup = soup(res, 'html.parser')
 
-    titles = page_soup.findAll("div", {"class": "item-title"})
+tbody = page_soup.find("tbody")
 
-    # print(page_soup.findAll("div", {"class": "item-title"}))
-    for title in titles:
-        ttl = title.a.text
-        all_titles.append(ttl.strip())
-        # f.write(ttl.strip())
+trs = tbody.find_all("tr")
 
-# with open("titles.csv", 'w', newline='') as myfile:
-#      wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
-#      wr.writerow(all_titles)
+for tr in trs:
+    tds = tr.find_all("td")
+    tds = [x.text.strip() for x in tds]
+    # hanzi_word = pinyin.text.strip()
+    # print(cols)
+    if(len(tds) > 1):
+        words.append(
+            {"hanzi": tds[1], "pinyin": tds[0].encode('ascii', 'ignore').decode("utf-8", "ignore"), "definition": tds[2]})
+
+# print(words)
 
 import pandas
 
-df = pandas.DataFrame(data={"titles": all_titles})
-df.to_csv("titles.csv", sep=',',index=False)
-print(len(all_titles))
-
+df = pandas.DataFrame(data=words)
+df.to_csv("words.csv", sep=',', index=False)
+# print(len(all_titles))
