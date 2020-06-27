@@ -5,7 +5,7 @@ import argparse
 import re
 import colorama as clr
 
-from mdbg.mdbg import mdbg_class
+from mdbg import mdbg_class
 
 clr.init(autoreset=True)
 
@@ -35,8 +35,8 @@ def str2bool(v):
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Unoficial CLI for mdbg chinese dictionary.")
-    parser.add_argument("simplified", type=str, help="Simplified or Traditional characters",
-        choices=[0, 1])
+    parser.add_argument("simplified", type=str, nargs='?', default= '0', help="Simplified or Traditional characters",
+        choices=['0', '1'])
     parser.add_argument("word",
                          type=ensure_unicode,
                          help=("Word to translate."))
@@ -86,8 +86,7 @@ def print_translation(res, do_color):
 def run():
     args = parse_args()
 
-    results = mdbg_class.translate(args.word,
-                            args.simplified)
+    results = mdbg_class.translate(args.word, args.simplified)
     n_results = len(results)
 
     if not results:
